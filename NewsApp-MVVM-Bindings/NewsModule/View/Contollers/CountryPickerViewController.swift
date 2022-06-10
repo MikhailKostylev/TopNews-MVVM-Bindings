@@ -17,6 +17,7 @@ final class CountryPickerViewController: UIViewController {
     weak var delegate: CountryPickerViewControllerDelegate?
     
     private var allCountries = [
+        (abbreviation: "ru", country: "Russia"),
         (abbreviation: "ar", country: "Argentina"),
         (abbreviation: "au", country: "Australia"),
         (abbreviation: "br", country: "Brazil"),
@@ -31,7 +32,6 @@ final class CountryPickerViewController: UIViewController {
         (abbreviation: "kr", country: "Korea"),
         (abbreviation: "mx", country: "Mexico"),
         (abbreviation: "no", country: "Norway"),
-        (abbreviation: "ru", country: "Russia"),
         (abbreviation: "se", country: "Sweden"),
         (abbreviation: "us", country: "United States")
     ]
@@ -49,6 +49,7 @@ final class CountryPickerViewController: UIViewController {
         setupVC()
         setupCloseButton()
         setupCounrtyPicker()
+        
     }
     
     // MARK: - Setups

@@ -30,7 +30,6 @@ final class TopicViewController: UIViewController {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         table.backgroundColor = .secondarySystemBackground
-        table.isHidden = true
         return table
     }()
     
@@ -43,9 +42,8 @@ final class TopicViewController: UIViewController {
         setupTopicsTable()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        topicsTableView.isHidden = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         topicsTableView.animateTableView()
     }
     

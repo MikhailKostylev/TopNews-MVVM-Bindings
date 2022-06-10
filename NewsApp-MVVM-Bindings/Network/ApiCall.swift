@@ -7,7 +7,13 @@
 
 import Foundation
 
-struct ApiCall {
+protocol ApiCallProtocol {
+    func setupTopNewsUrl(country: String) -> String
+    func setupNewsUrl(query: String) -> String
+    func setupSpecificNewsUrl(topic: String, country: String) -> String
+}
+
+struct ApiCall: ApiCallProtocol {
     
     /// example: "https://newsapi.org/v2/top-headlines?apiKey=53b50c107ff04fab932893969fd0974e&country=ru"
     func setupTopNewsUrl(country: String) -> String {

@@ -2,12 +2,14 @@
 //  UITableView.swift
 //  NewsApp-MVVM-Bindings
 //
-//  Created by Mikhail Kostylev on 09.06.2022.
+//  Created by Mikhail Kostylev on 10.06.2022.
 //
 
+import Foundation
 import UIKit
 
 extension UITableView {
+    
     func animateTableView() {
         self.reloadData()
         
@@ -32,3 +34,4 @@ extension UITableView {
         }
     }
 }
+

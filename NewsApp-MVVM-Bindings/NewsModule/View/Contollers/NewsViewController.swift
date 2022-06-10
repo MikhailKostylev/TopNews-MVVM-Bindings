@@ -9,9 +9,14 @@ import UIKit
 import SnapKit
 import SafariServices
 
-final class NewsViewController: UIViewController {
+protocol NewsViewControllerProtocol: AnyObject {
+    var viewModel: NewsViewModelProtocol { get }
+}
+
+final class NewsViewController: UIViewController, NewsViewControllerProtocol {
     
-    private let viewModel: NewsViewModel
+    var viewModel: NewsViewModelProtocol
+    
     private let sections = [CellType.header, CellType.list]
     private let searchController = UISearchController(searchResultsController: nil)
     private let refreshControl = UIRefreshControl()
@@ -24,17 +29,8 @@ final class NewsViewController: UIViewController {
         return table
     }()
     
-    private let errorLabel: UILabel = {
-        let label = UILabel()
-        label.isHidden = true
-        label.numberOfLines = 0
-        label.textColor = .label
-        label.textAlignment = .center
-        return label
-    }()
-    
     let spinner: UIActivityIndicatorView = {
-        let spinner = UIActivityIndicatorView(style: .medium)
+        let spinner = UIActivityIndicatorView(style: .large)
         spinner.hidesWhenStopped = true
         spinner.tintColor = .label
         return spinner
@@ -42,7 +38,7 @@ final class NewsViewController: UIViewController {
     
     // MARK: - Init
     
-    init(viewModel: NewsViewModel) {
+    init(viewModel: NewsViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -76,15 +72,10 @@ final class NewsViewController: UIViewController {
     
     private func setupLayout() {
         view.addSubview(newsTableView)
-        view.addSubview(errorLabel)
         view.addSubview(spinner)
         
         newsTableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-        
-        errorLabel.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
         }
         
         spinner.snp.makeConstraints { make in
@@ -197,10 +188,9 @@ final class NewsViewController: UIViewController {
         viewModel.error.bind { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
-                    self?.errorLabel.isHidden = false
-                    self?.errorLabel.text = "Oops.. Something Went Wrong\nError Code: \(error.localizedDescription)"
-                } else {
-                    self?.errorLabel.isHidden = true
+                    let title = "Oops.. something went wrong"
+                    let message = "Error Code: \(error.localizedDescription)"
+                    self?.showAlert(title: title, message: message)
                 }
             }
         }
@@ -230,23 +220,35 @@ extension NewsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch sections[indexPath.section] {
         case .header:
-            let cell = tableView.dequeueReusableCell(
+            guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: HeaderNewsTableViewCell.identifier,
                 for: indexPath
-            ) as? HeaderNewsTableViewCell
+            ) as? HeaderNewsTableViewCell else { return UITableViewCell() }
             if let firstNews = viewModel.news.value.first {
-                cell?.configure(with: firstNews)
+                cell.configure(with: firstNews)
             }
-            return cell ?? UITableViewCell()
+            return cell
             
         case .list:
-            let cell = tableView.dequeueReusableCell(
+            guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: NewsTableViewCell.identifier,
                 for: indexPath
-            ) as? NewsTableViewCell
-            cell?.configure(with: viewModel.news.value[indexPath.row + 1])
-            return cell ?? UITableViewCell()
+            ) as? NewsTableViewCell else { return UITableViewCell() }
+            cell.configure(with: viewModel.news.value[indexPath.row + 1])
+            return cell
         }
+    }
+}
+
+// MARK: - Table Delegate Methods
+
+extension NewsViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let url = URL(string: viewModel.news.value[indexPath.row].url) else { return }
+        let vc = SFSafariViewController(url: url)
+        present(vc, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -258,45 +260,27 @@ extension NewsViewController: UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch sections[section] {
-        case .header:
-            return "Trending"
-        case .list:
-            return "Top Headlines"
-        }
-    }
-    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return Constants.heightForHeaderInSection
-    }
-}
-
-// MARK: - Table Delegate Methods
-
-extension NewsViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let vc = SFSafariViewController(url: URL(string: viewModel.news.value[indexPath.row].url)!)
-        present(vc, animated: true)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = sections[section]
-        let myLabel = UILabel()
-        myLabel.frame = CGRect(x: 16, y: 5, width: 320, height: 30)
-        myLabel.font = UIFont.boldSystemFont(ofSize: 28)
-
         let headerView = UIView()
-        headerView.addSubview(myLabel)
+        let headerLabel = UILabel(frame: CGRect(
+            x: Constants.padding,
+            y: 0,
+            width: view.width - Constants.padding,
+            height: Constants.heightForHeaderInSection))
+        headerLabel.font = .systemFont(ofSize: 28, weight: .semibold)
+        headerView.addSubview(headerLabel)
 
         switch section {
         case .header:
-            myLabel.text = "Trending"
+            headerLabel.text = "Trending"
             return headerView
         case .list:
-            myLabel.text = "Top Headlines"
+            headerLabel.text = "Top Headlines"
             return headerView
         }
     }
@@ -316,19 +300,6 @@ extension NewsViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - Country/Topic Delegates
-
-extension NewsViewController: CountryPickerViewControllerDelegate, TopicViewControllerDelegate {
-
-    func setCountry(with country: String) {
-        viewModel.country = country
-    }
-    
-    func setTopic(with topic: String){
-        viewModel.topic = topic
-    }
-}
-
 // MARK: - Search Bar Methods
 
 extension NewsViewController: UISearchBarDelegate {
@@ -344,6 +315,19 @@ extension NewsViewController: UISearchBarDelegate {
             isSearching = true
             viewModel.searchNews(query: searchText)
         }
+    }
+}
+
+// MARK: - Country/Topic Delegates
+
+extension NewsViewController: CountryPickerViewControllerDelegate, TopicViewControllerDelegate {
+
+    func setCountry(with country: String) {
+        viewModel.country = country
+    }
+    
+    func setTopic(with topic: String){
+        viewModel.topic = topic
     }
 }
 

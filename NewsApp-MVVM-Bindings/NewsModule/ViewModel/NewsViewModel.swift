@@ -7,43 +7,70 @@
 
 import Foundation
 
-final class NewsViewModel {
+protocol NewsViewModelProtocol: AnyObject {
+    var news: Bindable<[News]> { get set }
+    var error: Bindable<NetworkError?> { get set }
+    var title: Bindable<String> { get set }
+    var isLoading: Bindable<Bool> { get set }
+    var totalData: Int { get set }
+    var searchText: String { get set }
+    var country: String { get set }
+    var topic: String { get set }
+    func setCountryTitle()
+    func setTopicTitle()
+    func getTopNews(counry: String)
+    func searchNews(query: String)
+    func searchSpecificNews(topic: String, country: String)
+    func switchingCases(result: Result<NewsResponse, NetworkError>)
+    func successHandler(for result: NewsResponse)
+    func errorHandler(for error: NetworkError)
+}
+
+final class NewsViewModel: NewsViewModelProtocol {
     
-    let networkService: NetworkService
+    let networkService: NetworkServiceProtocol
     
-    var news = Bindable([News]())
-    var error: Bindable<Error?> = Bindable(nil)
-    var title: Bindable<String> = Bindable("")
-    var isLoading = Bindable(true)
-    
-    var totalData = 0
-    var searchText = ""
-    var country = "ru" {
+    var news: Bindable<[News]>
+    var error: Bindable<NetworkError?>
+    var title: Bindable<String>
+    var isLoading: Bindable<Bool>
+    var totalData: Int
+    var searchText: String
+    var country: String {
         didSet {
             getTopNews(counry: country)
             setCountryTitle()
         }
     }
     
-    var topic = "" {
+    var topic: String {
         didSet {
             searchSpecificNews(topic: topic, country: country)
             setTopicTitle()
         }
     }
     
-    init(networkService: NetworkService) {
+    init(model: Bindable<[News]>, networkService: NetworkServiceProtocol, error: Bindable<NetworkError?>, title: Bindable<String>, isLoading: Bindable<Bool>, totalData: Int, searchText: String, country: String, topic: String) {
         self.networkService = networkService
+        self.news = model
+        self.error = error
+        self.title = title
+        self.isLoading = isLoading
+        self.totalData = totalData
+        self.searchText = searchText
+        self.country = country
+        self.topic = topic
         getTopNews(counry: country)
+        defer { setCountryTitle() }
     }
     
-    // MARK: - Private Methods
+    // MARK: - Titles
     
-    private func setCountryTitle() {
+    func setCountryTitle() {
         title.value = "News" + " - " + country.uppercased()
     }
     
-    private func setTopicTitle() {
+    func setTopicTitle() {
         title.value = "News" + " - " + country.uppercased() + " (\(topic))"
     }
     
@@ -62,14 +89,14 @@ final class NewsViewModel {
     }
     
     func searchSpecificNews(topic: String, country: String) {
-        networkService.searchSpecificNews(topic: topic, country: country) { [weak self] result in
+        networkService.searchTopicNews(topic: topic, country: country) { [weak self] result in
             self?.switchingCases(result: result)
         }
     }
     
     // MARK: - Response Handlers
     
-    private func switchingCases(result: Result<NewsResponse, NetworkError>) {
+    func switchingCases(result: Result<NewsResponse, NetworkError>) {
         switch result {
         case .success(let data):
             successHandler(for: data)
@@ -78,13 +105,13 @@ final class NewsViewModel {
         }
     }
     
-    private func successHandler(for result: NewsResponse) {
+    func successHandler(for result: NewsResponse) {
         news.value = result.articles
         isLoading.value = false
         totalData = result.totalResults
     }
     
-    private func errorHandler(for error: NetworkError) {
+    func errorHandler(for error: NetworkError) {
         self.error.value = error
         isLoading.value = false
         debugPrint(error.localizedDescription)

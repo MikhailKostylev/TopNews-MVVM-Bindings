@@ -23,7 +23,6 @@ final class HeaderNewsTableViewCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
-        label.text = "Loading..."
         label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 18, weight: .medium)
@@ -33,7 +32,6 @@ final class HeaderNewsTableViewCell: UITableViewCell {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
-        label.text = "Loading..."
         label.textColor = .secondaryLabel
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 14, weight: .regular)
@@ -43,7 +41,6 @@ final class HeaderNewsTableViewCell: UITableViewCell {
     private let publisherLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
-        label.text = "Loading..."
         label.textColor = .secondaryLabel
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 14, weight: .regular)

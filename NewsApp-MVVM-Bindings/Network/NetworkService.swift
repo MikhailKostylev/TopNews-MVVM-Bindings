@@ -8,11 +8,18 @@
 import Foundation
 import Alamofire
 
-final class NetworkService {
+protocol NetworkServiceProtocol: AnyObject {
+    var apiCall: ApiCallProtocol { get }
+    func getTopNews(country: String, completion: @escaping (Result<NewsResponse, NetworkError>) -> Void)
+    func searchNews(query: String, completion: @escaping (Result<NewsResponse, NetworkError>) -> Void)
+    func searchTopicNews(topic: String, country: String, completion: @escaping (Result<NewsResponse, NetworkError>) -> Void)
+}
+
+final class NetworkService: NetworkServiceProtocol {
     
-    var apiCall: ApiCall
+    var apiCall: ApiCallProtocol
     
-    init(apiCall: ApiCall) {
+    init(apiCall: ApiCallProtocol) {
         self.apiCall = apiCall
     }
     
@@ -52,7 +59,7 @@ final class NetworkService {
             }
     }
     
-    func searchSpecificNews(topic: String, country: String, completion: @escaping (Result<NewsResponse, NetworkError>) -> Void) {
+    func searchTopicNews(topic: String, country: String, completion: @escaping (Result<NewsResponse, NetworkError>) -> Void) {
         guard !topic.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         guard !country.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         
