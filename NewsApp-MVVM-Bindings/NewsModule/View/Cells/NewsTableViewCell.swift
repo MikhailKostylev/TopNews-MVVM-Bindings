@@ -90,14 +90,14 @@ final class NewsTableViewCell: UITableViewCell {
     }
     
     func configure(with model: News) {
-        let url = URL(string: model.urlToImage ?? "")
+        guard let url = URL(string: model.urlToImage ?? "") else { return }
         
         iconImageView.kf.setImage(
             with: url,
             placeholder: UIImage(named: "placeholderImage"),
             options: [
                 .scaleFactor(UIScreen.main.scale),
-                .transition(.fade(1)),
+                .transition(.fade(0.5)),
                 .cacheOriginalImage
             ])
         

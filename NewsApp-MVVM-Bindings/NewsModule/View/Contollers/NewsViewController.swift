@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import SafariServices
 
 protocol NewsViewControllerProtocol: AnyObject {
     var viewModel: NewsViewModelProtocol { get }
@@ -246,9 +245,19 @@ extension NewsViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let url = URL(string: viewModel.news.value[indexPath.row].url) else { return }
-        let vc = SFSafariViewController(url: url)
-        present(vc, animated: true)
+        var news = viewModel.news.value[indexPath.row]
+        
+        switch indexPath.section {
+        case 0:
+            news = viewModel.news.value[indexPath.row]
+        case 1:
+            news = viewModel.news.value[indexPath.row + 1]
+        default:
+            break
+        }
+        
+        let vc = CurrentNewsViewController(news: news)
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

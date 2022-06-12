@@ -26,7 +26,7 @@ final class TopicViewController: UIViewController {
         "Technology"
     ]
     
-    var topicsTableView: UITableView = {
+    private lazy var topicsTableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         table.backgroundColor = .secondarySystemBackground
