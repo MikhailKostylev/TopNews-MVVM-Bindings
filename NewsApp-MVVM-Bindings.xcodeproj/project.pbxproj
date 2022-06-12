@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1F1F4916285601FB00574EB0 /* CurrentNewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F4915285601FB00574EB0 /* CurrentNewsViewController.swift */; };
+		1F23CE1B2856679F00238540 /* SkeletonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F23CE1A2856679F00238540 /* SkeletonCell.swift */; };
+		1F23CE1D28566E8700238540 /* SkeletonLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F23CE1C28566E8700238540 /* SkeletonLoadable.swift */; };
+		1F23CE2128567E3E00238540 /* SkeletonHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F23CE2028567E3D00238540 /* SkeletonHeaderCell.swift */; };
 		1F3280D12850B15400F05733 /* CountryPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3280D02850B15400F05733 /* CountryPickerViewController.swift */; };
 		1F3280D32850B2C100F05733 /* TopicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3280D22850B2C100F05733 /* TopicViewController.swift */; };
 		1F5BFD2C2851E917008C7EEB /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5BFD2B2851E917008C7EEB /* NetworkService.swift */; };
@@ -35,6 +38,9 @@
 
 /* Begin PBXFileReference section */
 		1F1F4915285601FB00574EB0 /* CurrentNewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentNewsViewController.swift; sourceTree = "<group>"; };
+		1F23CE1A2856679F00238540 /* SkeletonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonCell.swift; sourceTree = "<group>"; };
+		1F23CE1C28566E8700238540 /* SkeletonLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoadable.swift; sourceTree = "<group>"; };
+		1F23CE2028567E3D00238540 /* SkeletonHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonHeaderCell.swift; sourceTree = "<group>"; };
 		1F3280D02850B15400F05733 /* CountryPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryPickerViewController.swift; sourceTree = "<group>"; };
 		1F3280D22850B2C100F05733 /* TopicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicViewController.swift; sourceTree = "<group>"; };
 		1F5BFD2B2851E917008C7EEB /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -148,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				1FE64309284FCF930024906F /* Bindable.swift */,
+				1F23CE1C28566E8700238540 /* SkeletonLoadable.swift */,
 				1FE6430D284FD37F0024906F /* Constants.swift */,
 				1F5BFD33285212A7008C7EEB /* Errors.swift */,
 			);
@@ -216,7 +223,9 @@
 			isa = PBXGroup;
 			children = (
 				1FE6431A284FDA0A0024906F /* HeaderNewsTableViewCell.swift */,
+				1F23CE2028567E3D00238540 /* SkeletonHeaderCell.swift */,
 				1FE64318284FD9C30024906F /* NewsTableViewCell.swift */,
+				1F23CE1A2856679F00238540 /* SkeletonCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -352,6 +361,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F23CE1D28566E8700238540 /* SkeletonLoadable.swift in Sources */,
 				1F62429628533EA200763B62 /* UIViewController+extensions.swift in Sources */,
 				1F624294285334F400763B62 /* UIView+extensions.swift in Sources */,
 				1FE64312284FD5780024906F /* NewsViewModel.swift in Sources */,
@@ -361,12 +371,14 @@
 				1FE6431B284FDA0B0024906F /* HeaderNewsTableViewCell.swift in Sources */,
 				1F5BFD302852124D008C7EEB /* ApiCall.swift in Sources */,
 				1FE6430A284FCF930024906F /* Bindable.swift in Sources */,
+				1F23CE1B2856679F00238540 /* SkeletonCell.swift in Sources */,
 				1F3280D12850B15400F05733 /* CountryPickerViewController.swift in Sources */,
 				1FE642FE284FCC3B0024906F /* News.swift in Sources */,
 				1FE64315284FD94B0024906F /* Date+extensions.swift in Sources */,
 				1F624290285329BC00763B62 /* UITableView+extensions.swift in Sources */,
 				1FE642EB284FC7600024906F /* NewsViewController.swift in Sources */,
 				1F5BFD2C2851E917008C7EEB /* NetworkService.swift in Sources */,
+				1F23CE2128567E3E00238540 /* SkeletonHeaderCell.swift in Sources */,
 				1F3280D32850B2C100F05733 /* TopicViewController.swift in Sources */,
 				1FE642E7284FC7600024906F /* AppDelegate.swift in Sources */,
 				1FE642E9284FC7600024906F /* SceneDelegate.swift in Sources */,

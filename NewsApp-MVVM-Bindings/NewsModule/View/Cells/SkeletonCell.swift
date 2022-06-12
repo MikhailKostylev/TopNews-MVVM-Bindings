@@ -1,19 +1,22 @@
 //
-//  NewsTableViewCell.swift
+//  SkeletonCell.swift
 //  NewsApp-MVVM-Bindings
 //
-//  Created by Mikhail Kostylev on 07.06.2022.
+//  Created by Mikhail Kostylev on 12.06.2022.
 //
 
 import UIKit
 import SnapKit
 import Kingfisher
 
-final class NewsTableViewCell: UITableViewCell {
+final class SkeletonCell: UITableViewCell, SkeletonLoadable {
     
-    static let identifier = "NewsTableViewCell"
+    static let identifier = "SkeletonCell"
     
-    private var isLoaded = false
+    private var iconImageLayer = CAGradientLayer()
+    private var titleLayer = CAGradientLayer()
+    private var dateLayer = CAGradientLayer()
+    private var publisherLayer = CAGradientLayer()
     
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
@@ -53,14 +56,61 @@ final class NewsTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupVC()
+        setup()
+        layout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupVC() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        iconImageLayer.frame = iconImageView.bounds
+        iconImageLayer.cornerRadius = 5
+        
+        titleLayer.frame = titleLabel.bounds
+        titleLayer.cornerRadius = 3
+        
+        dateLayer.frame = dateLabel.bounds
+        dateLayer.cornerRadius = 3
+        
+        publisherLayer.frame = publisherLabel.bounds
+        publisherLayer.cornerRadius = 3
+    }
+    
+    private func setup() {
+        iconImageLayer.startPoint = CGPoint(x: 0, y: 0)
+        iconImageLayer.endPoint = CGPoint(x: 1, y: 1)
+        iconImageView.layer.addSublayer(iconImageLayer)
+        
+        titleLayer.startPoint = CGPoint(x: 0, y: 0)
+        titleLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        titleLabel.layer.addSublayer(titleLayer)
+        
+        dateLayer.startPoint = CGPoint(x: 0, y: 0)
+        dateLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        dateLabel.layer.addSublayer(dateLayer)
+        
+        publisherLayer.startPoint = CGPoint(x: 0, y: 0)
+        publisherLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        publisherLabel.layer.addSublayer(publisherLayer)
+        
+        let imageGroup = makeAnimationGroup()
+        imageGroup.beginTime = 0.0
+        iconImageLayer.add(imageGroup, forKey: "backgroundColor")
+        
+        let titleGroup = makeAnimationGroup(previousGroup: imageGroup)
+        titleLayer.add(titleGroup, forKey: "backgroundColor")
+        
+        let dateGroup = makeAnimationGroup(previousGroup: titleGroup)
+        dateLayer.add(dateGroup, forKey: "backgroundColor")
+        
+        let publisherGroup = makeAnimationGroup(previousGroup: dateGroup)
+        publisherLayer.add(publisherGroup, forKey: "backgroundColor")
+    }
+    
+    private func layout() {
         contentView.addSubview(iconImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(dateLabel)
@@ -108,3 +158,4 @@ final class NewsTableViewCell: UITableViewCell {
         publisherLabel.text = model.source.name
     }
 }
+

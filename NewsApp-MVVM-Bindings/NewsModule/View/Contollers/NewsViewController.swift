@@ -20,6 +20,7 @@ final class NewsViewController: UIViewController, NewsViewControllerProtocol {
     private let searchController = UISearchController(searchResultsController: nil)
     private let refreshControl = UIRefreshControl()
     private var isSearching = false
+    private var isLoaded = false
     
     // MARK: - UI elements
     
@@ -86,11 +87,17 @@ final class NewsViewController: UIViewController, NewsViewControllerProtocol {
         newsTableView.dataSource = self
         newsTableView.delegate = self
         newsTableView.register(
+            HeaderNewsTableViewCell.self,
+            forCellReuseIdentifier: HeaderNewsTableViewCell.identifier)
+        newsTableView.register(
+            SkeletonHeaderCell.self,
+            forCellReuseIdentifier: SkeletonHeaderCell.identifier)
+        newsTableView.register(
             NewsTableViewCell.self,
             forCellReuseIdentifier: NewsTableViewCell.identifier)
         newsTableView.register(
-            HeaderNewsTableViewCell.self,
-            forCellReuseIdentifier: HeaderNewsTableViewCell.identifier)
+            SkeletonCell.self,
+            forCellReuseIdentifier: SkeletonCell.identifier)
     }
     
     private func setupSearchController() {
@@ -155,6 +162,8 @@ final class NewsViewController: UIViewController, NewsViewControllerProtocol {
     }
     
     @objc private func refreshNewsData() {
+        isLoaded = !isLoaded
+        newsTableView.reloadData()
         viewModel.getTopNews(counry: viewModel.country)
         isSearching = false
     }
@@ -171,6 +180,7 @@ final class NewsViewController: UIViewController, NewsViewControllerProtocol {
         
         viewModel.news.bind { [weak self] _ in
             DispatchQueue.main.async {
+                self?.isLoaded = true
                 self?.newsTableView.reloadData()
                 self?.refreshControl.endRefreshing()
             }
@@ -180,6 +190,9 @@ final class NewsViewController: UIViewController, NewsViewControllerProtocol {
             DispatchQueue.main.async {
                 if !isLoading {
                     self?.spinner.stopAnimating()
+                } else {
+                    self?.isLoaded = false
+                    self?.newsTableView.reloadData()
                 }
             }
         }
@@ -219,22 +232,43 @@ extension NewsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch sections[indexPath.section] {
         case .header:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: HeaderNewsTableViewCell.identifier,
-                for: indexPath
-            ) as? HeaderNewsTableViewCell else { return UITableViewCell() }
-            if let firstNews = viewModel.news.value.first {
-                cell.configure(with: firstNews)
+            if isLoaded {
+                guard let cell = tableView.dequeueReusableCell(
+                    withIdentifier: HeaderNewsTableViewCell.identifier,
+                    for: indexPath) as? HeaderNewsTableViewCell else { return UITableViewCell() }
+                if let firstNews = viewModel.news.value.first {
+                    cell.configure(with: firstNews)
+                }
+                return cell
+                
+            } else {
+                guard let cell = tableView.dequeueReusableCell(
+                    withIdentifier: SkeletonHeaderCell.identifier,
+                    for: indexPath) as? SkeletonHeaderCell else { return UITableViewCell() }
+                if let firstNews = viewModel.news.value.first {
+                    cell.configure(with: firstNews)
+                }
+                return cell
             }
-            return cell
             
         case .list:
+            let news = viewModel.news.value[indexPath.row + 1]
+            
+            if isLoaded {
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: NewsTableViewCell.identifier,
-                for: indexPath
-            ) as? NewsTableViewCell else { return UITableViewCell() }
-            cell.configure(with: viewModel.news.value[indexPath.row + 1])
-            return cell
+                for: indexPath) as? NewsTableViewCell else { return UITableViewCell() }
+                cell.configure(with: news)
+                return cell
+                
+            } else {
+                guard let cell = tableView.dequeueReusableCell(
+                    withIdentifier: SkeletonCell.identifier,
+                    for: indexPath) as? SkeletonCell else { return UITableViewCell() }
+                cell.configure(with: news)
+                return cell
+            }
+            
         }
     }
 }
