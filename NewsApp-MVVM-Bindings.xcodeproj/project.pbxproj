@@ -212,9 +212,9 @@
 			isa = PBXGroup;
 			children = (
 				1FE642EA284FC7600024906F /* NewsViewController.swift */,
+				1F1F4915285601FB00574EB0 /* CurrentNewsViewController.swift */,
 				1F3280D02850B15400F05733 /* CountryPickerViewController.swift */,
 				1F3280D22850B2C100F05733 /* TopicViewController.swift */,
-				1F1F4915285601FB00574EB0 /* CurrentNewsViewController.swift */,
 			);
 			path = Contollers;
 			sourceTree = "<group>";
